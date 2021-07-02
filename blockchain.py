@@ -3,6 +3,7 @@ import datetime
 import json
 import sys
 
+BLOCKCHAIN_REWARD_FACTOR = 210000
 
 
 class Block:
@@ -59,11 +60,12 @@ class BlockChain:
             return list(obj)
         raise TypeError
 
-    def __init__(self, proof_of_work_diff, reward):
+    def __init__(self, proof_of_work_diff):
         self.proof_of_work_diff = proof_of_work_diff
-        self.reward = reward
         self.pending_transactions = []
         self.block_chain = [self.create_first_block()]
+        self.reward = reward = BLOCKCHAIN_REWARD_FACTOR / len(self.block_chain)
+
 
     def add_transaction(self, transaction):
         self.pending_transactions.append(transaction)
@@ -84,6 +86,7 @@ class BlockChain:
         if(block_to_mine.mine_block(self.proof_of_work_diff)):
             print("Block is mined, moving to the chain!")
             self.block_chain.append(block_to_mine)
+            self.reward = reward = BLOCKCHAIN_REWARD_FACTOR / len(self.block_chain)
         else:
             print("Block was not mined, not allowed on the chain")
 
@@ -113,20 +116,13 @@ def main():
     transaction_4 = Transaction("iqbal", "shawty", 55.6)
 
     transaction_li = [transaction_2,transaction_3, transaction_4] 
-    chain = BlockChain(4, 10)
+    chain = BlockChain(4)
     chain.add_transaction(transaction_1)
     chain.add_transaction(transaction_2)
     chain.add_transaction(transaction_3)
     chain.add_transaction(transaction_4)
 
 
-
-    
-
-
-
-    
-    
     chain.mine("Jeff Bezos")
 
     chain.add_transaction(transaction_1)
@@ -135,8 +131,6 @@ def main():
     chain.add_transaction(transaction_4)
 
     chain.mine("Jeff Bezos")
-
-
 
     print(chain.validate_blockchain())
 
