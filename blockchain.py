@@ -4,23 +4,75 @@ import json
 import sys
 from Block import * 
 from Transaction import * 
+import sqlite3
 
 
 BLOCKCHAIN_REWARD_FACTOR = 210000
 
+
 class BlockChain:
+    def __init__(self, proof_of_work_diff=3):
+        self.conn_chain = self.get_chain_db()
+        self.conn_trans = self.get_transactions_db()
+        self.sql_chain = self.conn_chain.cursor()
+        self.sql_trans = self.conn_trans.cur()
 
-    def set_default(obj):
-        if isinstance(obj, set):
-            return list(obj)
-        raise TypeError
 
-    def __init__(self, proof_of_work_diff):
+        self.curr_trans_count = self.get_num_trans()
         self.proof_of_work_diff = proof_of_work_diff
         self.pending_transactions = []
-        self.block_chain = [self.create_first_block()]
-        self.reward = reward = BLOCKCHAIN_REWARD_FACTOR / len(self.block_chain)
+        self.block_chain = self.get_chain()
+        self.reward = BLOCKCHAIN_REWARD_FACTOR / len(self.block_chain)
 
+
+
+    def get_chain_db(self):
+        conn_chain = sqlite3.connect('BlockChain.db')
+        conn_chain.execute("""CREATE TABLE BlockChain  (
+            prev_hash text,
+            transaction_ids text,
+            timestamp text,
+            hash text
+            )""")
+        return conn_chain
+            
+    def get_num_trans(self):
+        return self.sql_trans.execute("SELECT COUNT(*) FROM BlockChain")
+    
+    def get_transactions_db(self):
+        conn_trans = sqlite3.connect('Transactions.db')
+        conn_chain.execute("""CREATE TABLE Transactions  (
+            from_person text,
+            to_person text,
+            amount float,
+            id int
+            )""")
+        return conn_trans
+
+    def get_chain(self):
+        print("getting chain")
+        with self.conn_chain:
+            self.sql_chain.execute("SELECT * FROM BlockChain")
+            blockchain_list_sql = self.sql.fetchall()
+
+        # if the database is empty create a new blockchain
+        if (len(blockchain_list_sql) == 0): 
+            return [self.create_first_block()]
+        else:
+            for block in blockchain_list_sql:
+                print("hi")
+                
+
+
+
+    def insert_blockchain_sql(self):
+        for block in self.block_chain:
+            li_of_ids = []
+            for transaction in block.transactions:
+                li_of_ids.append(transaction.id)
+            with self.conn_chain:
+                self.sql.execute("INSERT into BlockChain VALUES (?, ?, ?, ?)", (block.prev_hash, str(li_of_ids), block.timestamp, block.hash) )
+                
 
     def add_transaction(self, transaction):
         self.pending_transactions.append(transaction)
@@ -32,18 +84,18 @@ class BlockChain:
     def mine(self, miner_name):
         transaction_for_miner = Transaction("Iqbal_Coin", miner_name, self.reward)
         self.pending_transactions.append(transaction_for_miner)
-        print(self.block_chain)
+        #print(self.block_chain)
 
         prev_hash = self.block_chain[-1].hash
         block_to_mine = Block(prev_hash, self.pending_transactions, datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
-        print(block_to_mine)
+        #print(block_to_mine)
 
         if(block_to_mine.mine_block(self.proof_of_work_diff)):
             print("Block is mined, moving to the chain!")
             self.block_chain.append(block_to_mine)
             self.reward = reward = BLOCKCHAIN_REWARD_FACTOR / len(self.block_chain)
         else:
-            print("Block was not mined, not allowed on the chain")
+           print("Block was not mined, not allowed on the chain")
 
     def __repr__(self):
         return str(self)
@@ -62,38 +114,6 @@ class BlockChain:
             if(self.block_chain[chain_index].prev_hash != self.block_chain[chain_index - 1].hash):
                 return False
         return True
-    
-
-def main():
-    transaction_1 = Transaction("iqbal", "her", 11.56)
-    transaction_2 = Transaction("her", "iqbal", 12.56 )
-    transaction_3 = Transaction("cute girl", "iqbal", 33.56)
-    transaction_4 = Transaction("iqbal", "shawty", 55.6)
-
-    transaction_li = [transaction_2,transaction_3, transaction_4] 
-    chain = BlockChain(4)
-    chain.add_transaction(transaction_1)
-    chain.add_transaction(transaction_2)
-    chain.add_transaction(transaction_3)
-    chain.add_transaction(transaction_4)
-
-
-    chain.mine("Jeff Bezos")
-
-    chain.add_transaction(transaction_1)
-    chain.add_transaction(transaction_2)
-    chain.add_transaction(transaction_3)
-    chain.add_transaction(transaction_4)
-
-    chain.mine("Jeff Bezos")
-
-    print(chain.validate_blockchain())
-
-
-   
-
-if __name__ == "__main__":
-    main()
 
 
 
