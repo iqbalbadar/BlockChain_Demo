@@ -17,14 +17,7 @@ def main():
     chain.add_transaction(transaction_4)
 
 
-    chain.mine("Jeff Bezos")
-
-    chain.add_transaction(transaction_1)
-    chain.add_transaction(transaction_2)
-    chain.add_transaction(transaction_3)
-    chain.add_transaction(transaction_4)
-
-    chain.mine("Jeff Bezos")
+    chain.mine("Jeff Bezos", 5)
 
     print(chain.validate_blockchain())
 
