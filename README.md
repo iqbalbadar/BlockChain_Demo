@@ -6,6 +6,7 @@ Currently, I am using sqllite in order to store the blockchain so that way it ca
 a user can use instead of just starting up from scratch each time. 
 
 I also plan to do the following: 
-1. Making a test file (after sql is implemented)
-2. Create the process of signing transactions and letting the user have a public/private for their wallet
-2. Make a full scaled website implemented with django/flask 
+1. Improving user input
+2. Making a test file to test the blockchain (after sql is implemented)
+3. Create the process of signing transactions and letting the user have a public/private for their wallet
+4. Make a full scaled website implemented with django/flask 
