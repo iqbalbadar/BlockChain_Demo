@@ -1,3 +1,6 @@
+In order to figure out how to use the blockchain just type python main.py -h to see the commands
+
+
 This is currently a blockchain simulation I am writing in python. 
 
 I wanted to understand how blockchain works, so I have all the basic implementation of blockchain down. 
@@ -10,3 +13,4 @@ I also plan to do the following:
 2. Making a test file to test the blockchain (after sql is implemented)
 3. Create the process of signing transactions and letting the user have a public/private for their wallet
 4. Make a full scaled website implemented with django/flask 
+
